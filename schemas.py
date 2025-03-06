@@ -6,7 +6,7 @@ from typing import Optional , List
 
 class UserCreate(BaseModel):
     username: str
-    bottle_id:int
+    # bottle_id:int
     email_id :EmailStr
     firstname : str
     lastname : str

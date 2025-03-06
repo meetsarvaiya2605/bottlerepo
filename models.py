@@ -20,7 +20,7 @@ class User(Base):
     notification_off = Column(Boolean,nullable=False)
     created_at = Column(TIMESTAMP(timezone=True),nullable=False, server_default= text('now()'))
     updated_at  = Column(TIMESTAMP(timezone=True),nullable=False, server_default= text('now()'))
-    bottle = relationship("Bottle")
+    bottle = relationship("Bottle" , back_populates="user", uselist=False)
 
 class Bottle(Base):
     __tablename__ = "bottles"
@@ -29,7 +29,7 @@ class Bottle(Base):
     bottle_capacity = Column(Integer,nullable=False, default=100)
     bottle_amount = Column(Integer,nullable=False,default=0)
     created_at = Column(TIMESTAMP(timezone=True),nullable=False, server_default= text('now()'))
-    user = relationship("User")
+    user = relationship("User", back_populates="bottle")
 
 
 
