@@ -26,7 +26,7 @@ def get_user(id: int, db: Session = Depends(get_db)):
 @router.delete("/{id}")
 def delete_user(id: int, db: Session = Depends(get_db)):
     user = db.query(models.User).filter(models.User.id ==id)
-    if not user:
+    if user.first() == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="user not found")
     user.delete(synchronize_session=False)
     db.commit() 
