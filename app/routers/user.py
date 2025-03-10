@@ -8,13 +8,16 @@ import oauth2
 router = APIRouter(prefix="/users")
 
 
-@router.post("/", response_model=schemas.UserResponse)
+@router.post("/", response_model=schemas.Token)
 def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     new_user = models.User(**user.dict())
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
-    return new_user
+    access_token = oauth2.create_access_token(data={"user_id": new_user.id})
+    return {"access_token": access_token, "token_type": "Bearer"}
+
+    # return new_user
 
 @router.get("/{id}", response_model=schemas.UserResponse)
 def get_user(id: int, db: Session = Depends(get_db)):

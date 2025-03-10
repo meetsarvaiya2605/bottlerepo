@@ -5,12 +5,10 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 router= APIRouter()
-
-# ✅ Replace with your SMTP details
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587
-SMTP_EMAIL = "meetsarvaiya41@gmail.com"  # Replace with your email
-SMTP_PASSWORD = "pfwr lcvx vgdc oexv"  # Use an "App Password" instead of your real password
+SMTP_EMAIL = "meetsarvaiya41@gmail.com"  
+SMTP_PASSWORD = "pfwr lcvx vgdc oexv" 
 
 class EmailRequest(BaseModel):
     to_email: EmailStr

@@ -9,13 +9,29 @@ import oauth2
 router = APIRouter()
 
 
-@router.post("/fill_bottle/")
-def fill_bottle(fill:bool = False,db:Session=Depends(get_db)):
-    bottle = db.query(models.Fill_Bottle).first()
-    if not bottle:
-        bottle = models.Fill_Bottle()
-        db.add(bottle)
+# @router.post("/fill_bottle/")
+# def fill_bottle(fill:bool = False ,db:Session=Depends(get_db)):
+#     bottle = db.query(models.Fill_Bottle).first()
+#     if not bottle:
+#         bottle = models.Fill_Bottle()
+#         db.add(bottle)
 
-    bottle.is_filled = fill
-    db.commit()
-    return{"message":f"bottle filled {fill}"}
+#     bottle.is_filled = fill
+#     db.commit()
+#     return{"message":f"bottle filled {fill}"}
+
+
+# @router.post("/empty_bottle/")
+# def empty_bottle(db:Session=Depends(get_db)):
+#     bottle = db.query(models.Fill_Bottle).first()
+#     if not bottle:
+#         bottle.is_filled = False
+
+#         db.commit()
+
+#     return {"message":"Bottle empty"}
+    
+
+
+    
+    

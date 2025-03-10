@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from database import engine
 import models
-from app.routers import user,bottle,auth,email
+from app.routers import user,bottle,auth,email,fillbottel
 
 
 app = FastAPI()
@@ -12,3 +12,4 @@ app.include_router(user.router)
 app.include_router(bottle.router)
 app.include_router(auth.router)
 app.include_router(email.router)
+app.include_router(fillbottel.router)
