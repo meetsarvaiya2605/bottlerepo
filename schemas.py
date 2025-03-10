@@ -23,10 +23,15 @@ class UserResponse(BaseModel):
     class config:
         from_attribute:True
 
+class Token(BaseModel):
+    access_token : str
+    token_type:str
+
+ 
 
 
 class BottleCreate(BaseModel):
-    user_id:int
+    # user_id:int
     bottle_capacity :int
     bottle_amount:int
 class BottleResponse(BaseModel):

@@ -10,13 +10,22 @@ router =APIRouter(
     prefix="/bottles"
 )
 
-@router.post("/",response_model=schemas.BottleResponse)
-def create_bottle(bottle:schemas.BottleCreate,db:Session=Depends(get_db)):
-    new_bottle = models.Bottle(**bottle.dict())
+@router.post("/", response_model=schemas.BottleResponse)
+def create_bottle(
+    bottle: schemas.BottleCreate,
+    db: Session = Depends(get_db),
+    current_user: models.User
+      = Depends(oauth2.get_current_user)  
+):
+    new_bottle = models.Bottle(
+        **bottle.dict(),
+        user_id=current_user.id  
+    )
     db.add(new_bottle)
     db.commit()
     db.refresh(new_bottle)
     return new_bottle
+
 
 @router.get("/{id}")
 def get_bottle(id:int,db:Session=Depends(get_db)):
