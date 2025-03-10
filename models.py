@@ -25,9 +25,8 @@ class User(Base):
 class Bottle(Base):
     __tablename__ = "bottles"
     id = Column(Integer,primary_key=True,autoincrement=True)
-    user_id  =Column(Integer, ForeignKey("userss.id") ,unique=True)
-  
-    bottle_capacity = Column(Integer, default=100)
+    user_id  =Column(Integer, ForeignKey("userss.id") ,unique=True) 
+    bottle_capacity = Column(Integer, default=1000)
     bottle_amount = Column(Integer,default=0)
     created_at = Column(TIMESTAMP(timezone=True), server_default= text('now()'))
     user = relationship("User", back_populates="bottle")
