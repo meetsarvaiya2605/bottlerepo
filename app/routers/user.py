@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 import models, schemas
 from database import get_db
 import oauth2
+from datetime import datetime
 
 router = APIRouter(prefix="/users")
 
@@ -18,6 +19,9 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     return {"access_token": access_token, "token_type": "Bearer"}
 
     # return new_user
+@router.get("/all")
+def get_users(db: Session=Depends(get_db)):
+    return db.query(models.User).all()
 
 @router.get("/{id}", response_model=schemas.UserResponse)
 def get_user(id: int, db: Session = Depends(get_db)):
@@ -45,3 +49,12 @@ def update_user(id:int, updated_user: schemas.UserCreate,db:Session = Depends(ge
     user_query.update(updated_user.dict(),synchronize_session=False)
     db.commit()   
     return user_query.first()
+
+@router.post("/drink_time",response_model=schemas.UserResponse)
+def update_last_drink_time(user_id: int,db: Session=Depends(get_db), ):
+    user = db.query(models.User).filter(models.User.id == user_id).first()
+    if user:
+        user.last_drink_time = datetime.utcnow()
+        db.commit()
+        db.refresh(user)
+    return user

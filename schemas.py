@@ -19,6 +19,7 @@ class UserCreate(BaseModel):
 class UserResponse(BaseModel):
     id:int
     created_at: datetime
+    last_drink_time:datetime
 
     class config:
         from_attribute:True
@@ -36,6 +37,8 @@ class BottleCreate(BaseModel):
     bottle_amount:int
 class BottleResponse(BaseModel):
     id:int
+    bottle_capacity:int
+    bottle_amount:int
     created_at:datetime
     class config :
         from_attribute:True

@@ -3,6 +3,7 @@ from sqlalchemy import TIMESTAMP , Column, Integer, String,Boolean,Time,Float, F
 from pydoc import text
 from sqlalchemy.sql.expression import text
 from sqlalchemy.orm import relationship
+from datetime import datetime
 
 
 class User(Base):
@@ -18,6 +19,7 @@ class User(Base):
     current_status = Column(Integer)
     notification_on = Column(Boolean)
     notification_off = Column(Boolean)
+    last_drink_time = Column(DateTime,default=datetime.utcnow())
     created_at = Column(TIMESTAMP(timezone=True), server_default= text('now()'))
     updated_at  = Column(TIMESTAMP(timezone=True), server_default= text('now()'))
     bottle = relationship("Bottle" , back_populates="user", uselist=False)
@@ -30,7 +32,7 @@ class Bottle(Base):
     bottle_amount = Column(Integer,default=0)
     created_at = Column(TIMESTAMP(timezone=True), server_default= text('now()'))
     user = relationship("User", back_populates="bottle")
-    fill_status = relationship("Fill_Bottle", back_populates="bottle", uselist=False)
+    # fill_status = relationship("Fill_Bottle", back_populates="bottle", uselist=False)
 
 
 # class Fill_Bottle(Base):

@@ -31,8 +31,9 @@ def create_bottle(
 def get_bottle(id:int,db:Session=Depends(get_db)):
     bottle = db.query(models.Bottle).filter(models.Bottle.id == id).first()
     if not bottle:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="bottlen not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="bottle not found")
     return bottle
+
 
 @router.delete("/{id}")
 def delete_bottle(id:int,db:Session=Depends(get_db)):
