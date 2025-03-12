@@ -7,15 +7,14 @@ SQLALCHEMY_BASE_URL = "postgresql://postgres:1234@localhost/meet"
 
 engine = create_engine(SQLALCHEMY_BASE_URL)
 
-SessionLocal = sessionmaker(autocommit=False,autoflush=False, bind=engine)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
 
-def  get_db():
+
+def get_db():
     db = SessionLocal()
-    try:  
+    try:
         yield db
     finally:
         db.close()
-
-

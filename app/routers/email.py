@@ -1,38 +1,65 @@
-from fastapi import FastAPI, HTTPException,APIRouter
-from pydantic import BaseModel, EmailStr
 import smtplib
-from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
-router= APIRouter()
-SMTP_SERVER = "smtp.gmail.com"
-SMTP_PORT = 587
-SMTP_EMAIL = "meetsarvaiya41@gmail.com"  
-SMTP_PASSWORD = "pfwr lcvx vgdc oexv" 
+EMAIL_ADDRESS = "meetsarvaiya41@gmail.com"        
+EMAIL_PASSWORD = "pfwr lcvx vgdc oexv"        
 
-class EmailRequest(BaseModel):
-    to_email: EmailStr
-    subject: str
-    body: str
-
-@router.post("/send-email/")
-def send_email(request: EmailRequest):
+def send_goal_achieved_email(receiver_email):
     try:
-        # Create email message
-        msg = MIMEMultipart()
-        msg["From"] = SMTP_EMAIL
-        msg["To"] = request.to_email
-        msg["Subject"] = request.subject
-        msg.attach(MIMEText(request.body, "plain"))
+        # Email Content
+        subject = "🎉 Goal Achieved!"
+        body = f"Hi there!\n\nCongratulations! You have successfully achieved your water intake goal for today.\n\nStay hydrated! 💧"
 
-        # Connect to SMTP server
-        server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
-        server.starttls()  # Secure connection
-        server.login(SMTP_EMAIL, SMTP_PASSWORD)
-        server.sendmail(SMTP_EMAIL, request.to_email, msg.as_string())
-        server.quit()
+        # Create message
+        message = MIMEMultipart()
+        message["From"] = EMAIL_ADDRESS
+        message["To"] = receiver_email
+        message["Subject"] = subject
 
-        return {"message": "Email sent successfully", "to": request.to_email}
+        # Attach the body with MIMEText
+        message.attach(MIMEText(body, "plain"))
+
+        # Connect to Gmail SMTP server
+        with smtplib.SMTP("smtp.gmail.com", 587) as server:
+            server.ehlo()                  # Can be omitted
+            server.starttls()              # Secure the connection
+            server.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
+            
+            # Send the email
+            server.sendmail(EMAIL_ADDRESS, receiver_email, message.as_string())
+            
+            print(f"✅ Email sent successfully to {receiver_email}")
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to send email: {str(e)}")
+        print(f"❌ Failed to send email: {e}")
+
+
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+
+EMAIL_ADDRESS = "meetsarvaiya41@gmail.com"
+EMAIL_PASSWORD = "pfwr lcvx vgdc oexv"
+
+def send_reminder_email(receiver_email):
+    try:
+        subject = "🚨 Hydration Reminder!"
+        body = "Hey! You haven't drunk water in the last 20 minutes. Stay hydrated! 💧"
+
+        message = MIMEMultipart()
+        message["From"] = EMAIL_ADDRESS
+        message["To"] = receiver_email
+        message["Subject"] = subject
+        message.attach(MIMEText(body, "plain"))
+
+        with smtplib.SMTP("smtp.gmail.com", 587) as server:
+            server.starttls()
+            server.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
+            server.sendmail(EMAIL_ADDRESS, receiver_email, message.as_string())
+
+        print(f"✅ Reminder sent to {receiver_email}")
+
+    except Exception as e:
+        print(f"❌ Failed to send reminder to {receiver_email}: {e}")
+
