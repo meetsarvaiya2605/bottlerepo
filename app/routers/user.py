@@ -31,8 +31,8 @@ def get_users(db: Session = Depends(get_db)):
 
 
 @router.get("/{id}", response_model=schemas.UserResponse)
-def get_user(id: int, db: Session = Depends(get_db)):
-    user = db.query(models.User).filter(models.User.id == id).first()
+def get_user(db: Session = Depends(get_db),current_user: models.User = Depends(oauth2.get_current_user),):
+    user = db.query(models.User).filter(models.User.id == current_user.id).first()
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
     return user
@@ -51,10 +51,8 @@ def delete_user(id: int, db: Session = Depends(get_db)):
 
 
 @router.put("/{id}", response_model=schemas.UserResponse)
-def update_user(
-    id: int, updated_user: schemas.UserCreate, db: Session = Depends(get_db)
-):
-    user_query = db.query(models.User).filter(models.User.id == id)
+def update_user( updated_user: schemas.UserCreate, db: Session = Depends(get_db),current_user: models.User = Depends(oauth2.get_current_user),):
+    user_query = db.query(models.User).filter(models.User.id ==current_user.id)
     user = user_query.first()
     if user == None:
         raise HTTPException(

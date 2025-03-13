@@ -29,8 +29,9 @@ class User(Base):
     notification_on = Column(Boolean)
     notification_off = Column(Boolean)
     last_drink_time = Column(DateTime, default=datetime.utcnow())
-    reminder_count = Column(Integer, default=0)   
-    warning_sent = Column(Boolean, default=False) 
+    reminder_count = Column(Integer)
+     
+
     created_at = Column(TIMESTAMP(timezone=True), server_default=text("now()"))
     updated_at = Column(TIMESTAMP(timezone=True), server_default=text("now()"))
     bottle = relationship("Bottle", back_populates="user", uselist=False)
@@ -42,6 +43,7 @@ class Bottle(Base):
     user_id = Column(Integer, ForeignKey("userss.id"), unique=True)
     bottle_capacity = Column(Integer, default=1000)
     bottle_amount = Column(Integer, default=0)
+    last_recorded_amount = Column(Integer)
     created_at = Column(TIMESTAMP(timezone=True), server_default=text("now()"))
     user = relationship("User", back_populates="bottle")
     # fill_status = relationship("Fill_Bottle", back_populates="bottle", uselist=False)
@@ -61,5 +63,4 @@ class WaterGoal(Base):
     id = Column(Integer, unique=True, autoincrement=True, primary_key=True)
     set_goal = Column(Integer)
     user_id = Column(Integer, ForeignKey("userss.id"), unique=True)
-    current_status = Column(Integer)
     created_at = Column(TIMESTAMP(timezone=True), server_default=text("now()"))

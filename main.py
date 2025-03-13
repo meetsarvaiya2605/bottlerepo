@@ -3,6 +3,7 @@ from database import engine
 import models
 from app.routers import user, bottle, auth, email, fillbottel, goal_set
 from app.routers.fillbottel import start_schedular
+from database import SessionLocal
 
 
 app = FastAPI()
