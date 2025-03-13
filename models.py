@@ -29,6 +29,8 @@ class User(Base):
     notification_on = Column(Boolean)
     notification_off = Column(Boolean)
     last_drink_time = Column(DateTime, default=datetime.utcnow())
+    reminder_count = Column(Integer, default=0)   
+    warning_sent = Column(Boolean, default=False) 
     created_at = Column(TIMESTAMP(timezone=True), server_default=text("now()"))
     updated_at = Column(TIMESTAMP(timezone=True), server_default=text("now()"))
     bottle = relationship("Bottle", back_populates="user", uselist=False)

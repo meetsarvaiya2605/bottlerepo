@@ -101,8 +101,11 @@ def drink_water(amount:int,db:Session=Depends(get_db),current_user: models.User 
         email.send_goal_achieved_email(current_user.email_id)
 
         goal.set_goal = 0
+    current_user.reminder_count = 0
+    current_user.warning_sent = False
     db.commit()
     db.refresh(goal)
+    db.refresh(current_user)
     return JSONResponse(
         status_code=status.HTTP_200_OK,
         content={
@@ -117,26 +120,29 @@ def drink_water(amount:int,db:Session=Depends(get_db),current_user: models.User 
             "user_id":goal.user_id,
         
         }
-        
     )
-
 
 def check_user_last_drink(db: Session = SessionLocal()):
     now_time = datetime.utcnow()
-    twenty_minutes_ago = now_time - timedelta(minutes=1)
+    twenty_minutes_ago = now_time - timedelta(minutes=10)
 
     print(f"Check users who have not drunk water {twenty_minutes_ago}")
 
     users = db.query(models.User).all()
     for user in users:
         if user.notification_on and user.last_drink_time and user.last_drink_time < twenty_minutes_ago:
+            bottle = db.query(models.Bottle).filter(models.Bottle.user_id == user.id).first()
+
+            if bottle:
+                if bottle.bottle_amount<=200:
+              
 
             # print(f"Sending reminder to {user.email_id}")
-            email.send_reminder_email(user.email_id)
+                  email.send_reminder_email(user.email_id)
             # print( email.send_reminder_email(user.email_id))
 
         else:
-            print(f"{user.email_id}  no reminder sent.")
+              print(f"{user.email_id}  no reminder sent.")
 
 def start_schedular():
 
@@ -150,7 +156,7 @@ def start_schedular():
             db.close()
 
 
-    scheduler.add_job(job, 'interval',minutes =1 )
+    scheduler.add_job(job, 'interval',minutes =10 )
 
     scheduler.start()
     print("Scheduler started!")
