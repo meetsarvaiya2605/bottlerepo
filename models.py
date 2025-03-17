@@ -25,7 +25,7 @@ class User(Base):
     email_id = Column(String, unique=True)
     firstname = Column(String)
     lastname = Column(String)
-    hashed_password = Column(String)
+    password = Column(String)
     notification_on = Column(Boolean)
     notification_off = Column(Boolean)
     last_drink_time = Column(DateTime, default=datetime.utcnow())
@@ -43,8 +43,11 @@ class Bottle(Base):
     user_id = Column(Integer, ForeignKey("userss.id"), unique=True)
     bottle_capacity = Column(Integer, default=1000)
     bottle_amount = Column(Integer, default=0)
+    # last_drink_time = Column(DateTime, default=datetime.utcnow())
     last_recorded_amount = Column(Integer)
+    total_amount = Column(Integer)
     created_at = Column(TIMESTAMP(timezone=True), server_default=text("now()"))
+
     user = relationship("User", back_populates="bottle")
     # fill_status = relationship("Fill_Bottle", back_populates="bottle", uselist=False)
 

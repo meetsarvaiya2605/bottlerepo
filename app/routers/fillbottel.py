@@ -20,7 +20,6 @@ router = APIRouter(prefix="/bottles")
 scheduler = BackgroundScheduler()
 
 
-
 @router.get("/", response_model=schemas.BottleResponse)
 def get_user_bottle(
     db: Session = Depends(get_db),
@@ -118,11 +117,15 @@ def drink_water(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="user input is not valid or not enough space in bottle",
         )
+    if bottle.total_amount is None:
+        bottle.total_amount = 0
 
-    bottle.bottle_amount -= amount
+    bottle.bottle_amount  -= amount
+    bottle.total_amount += amount
 
     db.commit()
     db.refresh(bottle)
+
 
     goal = (
         db.query(models.WaterGoal)
@@ -135,10 +138,12 @@ def drink_water(
         )
     goal.set_goal -= amount
     if goal.set_goal <= 0:
-        email.send_goal_achieved_email(current_user.email_id)
+        if current_user.notification_on == True:
+
+            email.send_goal_achieved_email(current_user.email_id)
 
         goal.set_goal = 0
-    
+
     db.commit()
     db.refresh(goal)
     db.refresh(current_user)
@@ -165,15 +170,21 @@ def check_user_last_drink(db: Session = SessionLocal()):
     #  0
     users = db.query(models.User).all()
     for user in users:
-        bottle = db.query(models.Bottle).filter(models.Bottle.user_id == user.id ).first()
-        if user.notification_on and user.last_drink_time :
-            if  bottle and bottle.last_recorded_amount is not None  and bottle.bottle_amount is not None:
-                if bottle.last_recorded_amount - bottle.bottle_amount<=200:
+        bottle = (
+            db.query(models.Bottle).filter(models.Bottle.user_id == user.id).first()
+        )
+        if user.notification_on and user.last_drink_time:
+            if (
+                bottle
+                and bottle.last_recorded_amount is not None
+                and bottle.bottle_amount is not None
+            ):
+                if bottle.last_recorded_amount - bottle.bottle_amount <= 200:
                     email.send_reminder_email(user.email_id)
 
                     if user.reminder_count is None:
                         user.reminder_count = 0
-                         
+
                     user.reminder_count = user.reminder_count + 1
                     db.commit()
 
@@ -188,22 +199,20 @@ def check_user_last_drink(db: Session = SessionLocal()):
 
 def start_schedular():
     db = SessionLocal()
-    bottles  = db.query(models.Bottle).all()
+    bottles = db.query(models.Bottle).all()
     for bottle in bottles:
-        bottle.last_recorded_amount=bottle.bottle_amount
+        bottle.last_recorded_amount = bottle.bottle_amount
     db.commit()
-
 
     def job():
         # print("Running scheduled job: check_user_last_drink")
         db = SessionLocal()
-        try: 
+        try:
             check_user_last_drink(db)
         finally:
             db.close()
 
-    scheduler.add_job(job, "interval", seconds=30 )
+    scheduler.add_job(job, "interval", minutes=20)
 
-    scheduler.start()
+    scheduler.start() 
     print("Scheduler started!")
-

@@ -5,14 +5,13 @@ from typing import Optional, List
 
 
 class UserCreate(BaseModel):
-    username: str
-    # bottle_id:int
-    email_id: EmailStr
-    firstname: str
-    lastname: str
-    hashed_password: str
-    notification_on: bool
-    notification_off: bool
+    username: Optional[str] = None
+    firstname: Optional[str] = None
+    lastname: Optional[str] = None
+    password: Optional[str] = None
+    notification_on: Optional[bool] = None
+    notification_off: Optional[bool] = None
+    email_id: Optional[str] = None
 
 
 class UserResponse(BaseModel):

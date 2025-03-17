@@ -1,16 +1,19 @@
 from fastapi import FastAPI, HTTPException, Response, status, APIRouter, Depends
 
 from sqlalchemy.orm import Session
-import models, schemas
+import models, schemas,utils
 from database import get_db
 import oauth2
 from datetime import datetime
+from fastapi.responses import JSONResponse
 
 router = APIRouter(prefix="/users")
 
 
 @router.post("/", response_model=schemas.Token)
 def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
+    hashed_password = utils.hash_password(user.password)
+    user.password = hashed_password
     new_user = models.User(**user.dict())
     db.add(new_user)
     db.commit()
@@ -20,9 +23,14 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(bottle)
     access_token = oauth2.create_access_token(data={"user_id": new_user.id})
-    return {"access_token": access_token, "token_type": "Bearer"}
+    return JSONResponse(
+        status_code=status.HTTP_200_OK,
+        content={"message": "user created successfully",
+        "access_token": access_token,
+          "token_type": "Bearer",
+          }
+    )
 
-    # return new_user
 
 
 @router.get("/all")
@@ -51,15 +59,15 @@ def delete_user(id: int, db: Session = Depends(get_db)):
 
 
 @router.put("/{id}", response_model=schemas.UserResponse)
-def update_user( updated_user: schemas.UserCreate, db: Session = Depends(get_db),current_user: models.User = Depends(oauth2.get_current_user),):
-    user_query = db.query(models.User).filter(models.User.id ==current_user.id)
+def update_user( id: int,updated_user: schemas.UserCreate, db: Session = Depends(get_db)):
+    user_query = db.query(models.User).filter(models.User.id ==id)
     user = user_query.first()
     if user == None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"post with id: {id} was not found",
         )
-    user_query.update(updated_user.dict(), synchronize_session=False)
+    user_query.update(updated_user.dict(exclude_unset=True))
     db.commit()
     return user_query.first()
 
