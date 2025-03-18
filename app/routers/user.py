@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Response, status, APIRouter, Depends
+from fastapi import FastAPI, HTTPException, Response, status, APIRouter, Depends,Request
 
 from sqlalchemy.orm import Session
 import models, schemas,utils
@@ -10,7 +10,7 @@ from fastapi.responses import JSONResponse
 router = APIRouter(prefix="/users")
 
 
-@router.post("/", response_model=schemas.Token)
+@router.post("/")
 def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     hashed_password = utils.hash_password(user.password)
     user.password = hashed_password
@@ -27,8 +27,8 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
         status_code=status.HTTP_200_OK,
         content={"message": "user created successfully",
         "access_token": access_token,
-          "token_type": "Bearer",
-          }
+         "token_type": "Bearer",
+        }
     )
 
 
