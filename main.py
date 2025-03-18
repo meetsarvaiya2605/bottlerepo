@@ -25,5 +25,5 @@ def startup_event():
 @app.get("/send-daily-emails")
 def trigger_daily_emails():
     send_daily_status_emails()    
-    start_schedular()
+    # start_schedular()
     return {"message": "Daily status emails sent!"}

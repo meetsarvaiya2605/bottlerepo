@@ -1,7 +1,3 @@
-
-
-
-
 from apscheduler.schedulers.background import BackgroundScheduler
 from sqlalchemy.orm import Session
 from datetime import date
@@ -9,6 +5,9 @@ import models
 from database import SessionLocal
 from ..routers import email
 from apscheduler.triggers.cron import CronTrigger
+
+
+scheduler = BackgroundScheduler()
 
 
 def send_daily_status_emails():
@@ -24,8 +23,6 @@ def send_daily_status_emails():
        
             total_drink = bottle.total_amount if bottle.total_amount else 0
             remaining = total_capacity - total_drink
-
-            # Send email with daily status
             subject = f"Your Daily Water Intake Summary - {date.today().strftime('%d %b %Y')}"
             message = (
                 f"Hello {user.firstname},\n\n"
@@ -40,8 +37,10 @@ def send_daily_status_emails():
 
             # Call your email sending function
             email.send_email(to=user.email_id, subject=subject, body=message)
+            bottle.total_amount = 0
+            db.commit()
 
-            print(f"Sent daily status email to {user.email_id}")
+            # print(f"Sent daily status email to {user.email_id}")
 
     except Exception as e:
         print(f"Error sending daily emails: {e}")
@@ -52,14 +51,13 @@ def send_daily_status_emails():
 
 
 def start_scheduler():
-    scheduler = BackgroundScheduler()
-
+    
     scheduler.add_job(
         send_daily_status_emails,
-        trigger=CronTrigger(hour=0, minute=0),  # Every day at 12 AM
+        trigger=CronTrigger(hour=0, minute=0),
         id='daily_email_job',
         replace_existing=True
     )
 
     scheduler.start()
-    print("✅ APScheduler is running and will send emails daily at 12 AM.")
+    
