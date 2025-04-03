@@ -11,7 +11,7 @@ from fastapi.responses import JSONResponse
 router = APIRouter()
 
 
-@router.post("/login", response_model=schemas.Token)
+@router.post("/login")
 def login_user(
     user: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(database.get_db)
 ):

@@ -12,7 +12,6 @@ scheduler = BackgroundScheduler()
 
 def send_daily_status_emails():
     db: Session = SessionLocal()
-
     try:
         users = db.query(models.User).all()
 

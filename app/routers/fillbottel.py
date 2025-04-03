@@ -8,10 +8,7 @@ from ..routers import email
 from datetime import datetime, timedelta
 from apscheduler.schedulers.background import BackgroundScheduler
 from sqlalchemy.orm import Session
-from database import SessionLocal  # Your DB session
-
-# from your_app.check_reminder import check_user_last_drink
-# from .fillbottel import get_bottel
+from database import SessionLocal
 from sqlalchemy import TIMESTAMP
 
 # from models import Bottle
@@ -53,7 +50,6 @@ def fill_bottle(
     bottle.bottle_amount = bottle.bottle_capacity
     db.commit()
     db.refresh(bottle)
-    # return {"message ":"bottle filled"}
 
     return JSONResponse(
         status_code=status.HTTP_200_OK,
@@ -162,12 +158,7 @@ def drink_water(
 
 
 def check_user_last_drink(db: Session = SessionLocal()):
-    # now_time = datetime.utcnow()
-    # twenty_minutes_ago = now_time - timedelta(minutes=1)
-
-    # print(f"Check users who have not drunk water {twenty_minutes_ago}")
-    # reminder_count =
-    #  0
+    
     users = db.query(models.User).all()
     for user in users:
         bottle = (
@@ -212,7 +203,7 @@ def start_schedular():
         finally:
             db.close()
 
-    scheduler.add_job(job, "interval", minutes=20)
+    scheduler.add_job(job, "interval", minutes=900)
 
     scheduler.start() 
     print("Scheduler started!")

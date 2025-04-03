@@ -31,7 +31,6 @@ def setgoal(
     db.refresh(setgoal)
     return setgoal
 
-
 @router.get("/")
 def get_goal(
     db: Session = Depends(get_db),

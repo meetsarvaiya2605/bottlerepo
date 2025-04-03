@@ -78,7 +78,6 @@ def send_warning_email(receiver_email):
     try:
         subject = "🚨 Hydration Warning!"
         body = "Hey! You haven't drunk water in the last 60 minutes. Stay hydrated! 💧 it's warning to stay hydrate otherwise your health will dehydrate "
-
         message = MIMEMultipart()
         message["From"] = EMAIL_ADDRESS
         message["To"] = receiver_email
